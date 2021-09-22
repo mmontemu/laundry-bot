@@ -40,6 +40,20 @@ sh = sheet.get_worksheet(0)
 
 #sets up days of the week for later use
 weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+typeList = []
+startIndx = 0
+#sets up dryer and washer statuses -- true is washer and false is dryer
+content = requests.get(url).text
+for i in range(numberOfMachines) :
+    num = int(content.find("class=\"type\"", startIndx, len(content)))
+    if content[num + 13] == "W" : #jank
+        typeList[i] = True
+    else :
+        typeList[i] = False
+
+
+
+
 
 
 
@@ -50,12 +64,18 @@ def laundryScraper() :
     content = requests.get(url).text
     startIndx = 0
     freeMachines = 0
+    freeWashers = 0
+    freeDryers = 0
     for i in range(numberOfMachines) :
         num = int(content.find("class=\"status\"", startIndx, len(content)))
 
         #if data is jank then I can exclude more cases, but for now I am only excluding the "In Use" state, leaving the others
         if content[num + 15] != "I" :
             freeMachines += 1
+            if typeList[i] :
+                freeWashers += 1
+            else :
+                freeDryers += 1
         startIndx = num + 1
     print(freeMachines)
     minu = str(datetime.today().minute)
