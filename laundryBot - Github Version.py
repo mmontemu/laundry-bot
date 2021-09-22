@@ -47,9 +47,9 @@ content = requests.get(url).text
 for i in range(numberOfMachines) :
     num = int(content.find("class=\"type\"", startIndx, len(content)))
     if content[num + 13] == "W" : #jank
-        typeList[i] = True
+        typeList.append(True)
     else :
-        typeList[i] = False
+        typeList.append(False)
 
 
 
@@ -82,10 +82,10 @@ def laundryScraper() :
     if len(str(datetime.today().minute)) == 1 :
         minu = "0" + minu
     #inserts into the spreadsheet [timestamp, day of week, hour/minutes, machines availible] 
-    sh.insert_row([datetime.today().timestamp(), weekdays[datetime.today().weekday()], str(datetime.today().hour) + ":" + minu, freeMachines], 2)
+    sh.insert_row([datetime.today().timestamp(), weekdays[datetime.today().weekday()], str(datetime.today().hour) + ":" + minu, freeWashers, freeDryers, freeMachines], 2)
     
 
-schedule.every(checkFrequency).minutes.do(laundryScraper)
+schedule.every(checkFrequency).seconds.do(laundryScraper)
 while True:
     schedule.run_pending()
     time.sleep(1)
